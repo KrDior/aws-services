@@ -1,0 +1,71 @@
+service:
+  name: product-service
+# app and org for use with dashboard.serverless.com
+#app: your-app-name
+#org: your-org-name
+
+custom:
+  webpack:
+    webpackConfig: ./webpack.config.js
+    includeModules: true
+
+# Add the serverless-webpack plugin
+plugins:
+  - serverless-webpack
+  - serverless-offline
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  apiGateway:
+    minimumCompressionSize: 1024 # Enable gzip compression for responses > 1 KB
+  environment:
+    AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
+  region: 'eu-central-1'
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+      Resource: 'arn:aws:dynamodb:eu-central-1:307905271295:table/products'
+    - Effect: Allow
+      Action:
+        - sqs:*
+      Resource: 'arn:aws:sqs:eu-central-1:307905271295:product-update-sqs'
+
+
+functions:
+  products:
+    handler: handler.products
+    events:
+      - http:
+          method: get
+          path: products
+  updateProduct:
+    handler: handler.updateProduct
+    events:
+      - http:
+          method: post
+          path: updateProduct
+  productId:
+    handler: handler.productId
+    events:
+      - http:
+          method: get
+          path: product
+          cors: true
+  productsTitle:
+    handler: handler.productsTitle
+    events:
+      - http:
+          method: get
+          path: searchByTitle
+          cors: true
+  productsGenre:
+    handler: handler.productsGenre
+    events:
+      - http:
+          method: get
+          path: searchByGenre
+          cors: true

@@ -1,0 +1,34 @@
+{
+  "customerInfo": {
+    "address1": "asdfasdf",
+    "cardNumber": "4111111111111",
+    "city": "1",
+    "country": "111",
+    "cvv": "434",
+    "expiryDate": "2021-08-28T12:05:02.803Z",
+    "firstName": "David",
+    "lastName": "Kureev",
+    "nameOnCard": "card",
+    "state": "22",
+    "useAddressForPaymentDetails": false,
+    "zipcode": "70000"
+  },
+  "id": "1595937917360",
+  "itemsData": [
+    {
+      "availability": true,
+      "genres": [
+        "Action",
+        "Comedy",
+        "Science Fiction"
+      ],
+      "id": "1111111111",
+      "overview": "Jackie Chan stars as a hardened special forces agent who fights to protect a young woman from a sinister criminal gang. At the same time he with feels a special connection to the young woman, like they met in a different life.",
+      "poster_path": "https://image.tmdb.org/t/p/w500/x8kbeiqXFJc5RIAShyZMYAv8VCq.jpg",
+      "price": "30",
+      "title": "Bleeding Steel"
+    }
+  ],
+  "orderStatus": "approved",
+  "totalCost": "30"
+}

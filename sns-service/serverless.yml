@@ -1,0 +1,30 @@
+service:
+  name: sns-service
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  region: 'eu-central-1'
+  environment:
+    SQS: product-update-sqs
+
+resources:
+  Resources:
+    SnsTopic:
+      Type: AWS::SNS::Topic
+      Properties:
+        TopicName: "ProductTopic"
+    SnsTopicPolicy:
+      Type: AWS::SNS::TopicPolicy
+      Properties:
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                AWS: 307905271295
+              Action: sns:Subscribe
+              Resource:
+                Ref: SnsTopic
+        Topics:
+          - Ref: SnsTopic

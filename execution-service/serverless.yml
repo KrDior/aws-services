@@ -1,0 +1,93 @@
+service:
+  name: execution-service
+# app and org for use with dashboard.serverless.com
+#app: your-app-name
+#org: your-org-name
+
+custom:
+  webpack:
+    webpackConfig: ./webpack.config.js
+    includeModules: true
+  bucketName: execution-s3-bucket
+
+# Add the serverless-webpack plugin
+plugins:
+  - serverless-webpack
+  - serverless-offline
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  apiGateway:
+    minimumCompressionSize: 1024 # Enable gzip compression for responses > 1 KB
+  region: "eu-central-1"
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - "s3:*"
+      Resource: '*'
+
+functions:
+  uploadBucket:
+    handler: handler.uploadBucket
+    events:
+      - http:
+          method: post
+          path: s3products
+          cors: true
+      - http:
+          method: put
+          path: s3products
+          cors: true
+      - http:
+          method: delete
+          path: s3products
+          cors: true
+  listingBucket:
+    handler: handler.listingBucket
+    events:
+      - http:
+          method: get
+          path: s3products
+          cors: true
+  clearBucket:
+    handler: handler.clearBucket
+    events:
+      - http:
+          method: post
+          path: clearBucket
+          cors: true
+
+
+resources:
+  Resources:
+    Uploads:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:custom.bucketName}
+        CorsConfiguration:
+          CorsRules:
+            - AllowedHeaders:
+                - "Authorization"
+              AllowedMethods:
+                - GET
+              AllowedOrigins:
+                - "*"
+            - AllowedHeaders:
+                - "*"
+              AllowedMethods:
+                - PUT
+              AllowedOrigins:
+                - "*"
+            - AllowedHeaders:
+                - "*"
+              AllowedMethods:
+                - POST
+              AllowedOrigins:
+                - "*"
+            - AllowedHeaders:
+                - "*"
+              AllowedMethods:
+                - DELETE
+              AllowedOrigins:
+                - "*"

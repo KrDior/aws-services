@@ -1,0 +1,54 @@
+service:
+  name: auth-token-service
+# app and org for use with dashboard.serverless.com
+#app: your-app-name
+#org: your-org-name
+
+custom:
+  webpack:
+    webpackConfig: ./webpack.config.js
+    includeModules: true
+
+# Add the serverless-webpack plugin
+plugins:
+  - serverless-webpack
+  - serverless-offline
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  region: "eu-central-1"
+  apiGateway:
+    minimumCompressionSize: 1024 # Enable gzip compression for responses > 1 KB
+  environment:
+    AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
+    token: '12345'
+
+functions:
+  checkUserAuth:
+    handler: posts.checkUserAuth
+    events:
+      - http:
+          path: adminauth
+          method: get
+          cors: true
+          authorizer:
+            name: authorizerFunc
+            resultTtlInSeconds: 300
+            identitySource: method.request.header.Authorization
+            type: token
+  authorizerFunc:
+    handler: handler.authorizerFunc
+
+resources:
+  Resources:
+    GatewayResponse:
+      Type: 'AWS::ApiGateway::GatewayResponse'
+      Properties:
+        ResponseParameters:
+          gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+          gatewayresponse.header.Access-Control-Allow-Headers: "'*'"
+        ResponseType: DEFAULT_4XX
+        RestApiId:
+          Ref: 'ApiGatewayRestApi'
+        StatusCode: '401'

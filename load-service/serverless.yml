@@ -1,0 +1,43 @@
+service:
+  name: load-service
+# app and org for use with dashboard.serverless.com
+#app: your-app-name
+#org: your-org-name
+
+custom:
+  webpack:
+    webpackConfig: ./webpack.config.js
+    includeModules: true
+  table: products
+  region: eu-central-1
+  bucket: load-service
+
+# Add the serverless-webpack plugin
+plugins:
+  - serverless-webpack
+  - serverless-offline
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  region: "eu-central-1"
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource: 'arn:aws:dynamodb:eu-central-1:307905271295:table/products'
+
+functions:
+  upload:
+    handler: handler.upload
+    environment:
+      TABLE_NAME: "${self:custom.table}"
+      REGION: "${self:custom.region}"
+      BUCKET: "${self:custom.bucket}"
+    events:
+      - sqs: 'arn:aws:sqs:eu-central-1:307905271295:product-update-sqs'
